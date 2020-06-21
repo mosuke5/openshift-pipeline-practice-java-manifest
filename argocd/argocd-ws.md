@@ -97,10 +97,40 @@ Argo CDのコンソールにアクセス後、`NEW APP`を選択しアプリケ�
     - Cluster: `in-cluster`
     - Namespace: `userX-development`
 
+以下のようにトップページにアプリケーションが作成されていれば成功。
+
+![argocd-create-app](images/argocd-create-app.png)
+
+
+作成したアプリケーションは、Argo CDのCRとしても登録せされているので確認しよう。
+GUIから作成したが、当然マニフェストとしてArgo CD内の設定も管理できる。
+
 ```
-$ oc get application
+$ oc get application -n userX-argocd
 NAME                   AGE
-sample-kustomize-app   48m
+sample-app   48m
+
+$ oc get application -n userX-argocd sample-app -o yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  creationTimestamp: "2020-06-21T11:11:40Z"
+  generation: 2
+  name: sample-app
+  namespace: user2-argocd
+  resourceVersion: "1120068"
+  selfLink: /apis/argoproj.io/v1alpha1/namespaces/user2-argocd/applications/sample-app
+  uid: 58f175d7-aa08-48b2-8393-0d1285d0d638
+spec:
+  destination:
+    namespace: user2-development
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: argocd
+    repoURL: https://github.com/mosuke5/openshift-pipeline-practice-java-manifest
+    targetRevision: argocd
+...
 ```
 
 ## 変更とデプロイ
