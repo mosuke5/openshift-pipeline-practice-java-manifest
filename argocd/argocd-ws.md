@@ -134,6 +134,51 @@ spec:
 ...
 ```
 
-## 変更とデプロイ
+アプリケーションの登録が完了したら`SYNC`ボタンを押して、OpenShiftとマニフェストの状態を同期します。
+下記のように期待するリソースがすべてデプロイされていれば完了です。
+一部のリソース（DeploymentConfig、Route）がOut of syncで黄色くなっていますが、これはCRDであるが故です。
 
-## 変更の自動検知とデプロイ
+![synced](images/argocd-synced.png)
+
+## マニフェストの変更とデプロイ
+それではマニフェストの一部に変更を加えて、再同期してみましょう。`argocd/application-deploy.yaml`でアプリケーションのレプリカ数を変更してみます。
+変更後に`SYNC`ボタンを押してどう変化したか確認してみましょう。
+
+```yaml
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: sample-spring-boot
+      template: sample-spring-boot
+    name: argocd-pipeline-practice-java
+  spec:
+    #replicas: 1
+    replicas: 3
+    selector:
+      name: argocd-pipeline-practice-java
+```
+
+## マニフェストの変更の自動検知
+これまでは、Gitレポジトリ内のマニフェストとOpenShift上のリソースの同期は手動で行ってきました。
+Gitレポジトリの変更を動的にOpenShiftに反映させる（Continuous Deployment）機能もあります。
+
+`APP DETAILS`から`Sync Policy`で`ENABLE AUTO SYNC`を有効化しましょう。
+その上で、またマニフェストに変更をしてみましょう。
+試しに、レプリカ数を元に戻してみましょう。どのような結果になるか、確認してみましょう。
+
+
+```yaml
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: sample-spring-boot
+      template: sample-spring-boot
+    name: argocd-pipeline-practice-java
+  spec:
+    replicas: 1
+    #replicas: 3
+    selector:
+      name: argocd-pipeline-practice-java
+```
