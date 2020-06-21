@@ -89,6 +89,7 @@ Argo CDのコンソールにアクセス後、`NEW APP`を選択しアプリケ�
     - Applicatio Name: 任意
     - Project: `default` を選択
     - SYNC POLICY: `Manual`
+    - SYNC OPTIONS: `USE A SCHEMA TO VALIDATE RESOURCE MANIFESTS`のチェックを外す
 - SOURCE:
     - Repository URL: フォークした`openshift-pipeline-practice-java-manifest`のURL
     - Revision: `20200626`
