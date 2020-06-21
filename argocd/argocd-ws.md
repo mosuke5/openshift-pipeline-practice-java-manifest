@@ -5,6 +5,7 @@
 - Argo CD用のProjectの作成（`oc new-project userX-argocd` で作成）しておくこと
 - クラスタ管理者で、事前に利用するProjectに対してArgo CD Operatorをインストールしておくこと
 - 本レポジトリをフォークしておくこと
+  - フォーク先のレポジトリで、`argocd/application-deploy.yaml` の `image: image-registry.openshift-image-registry.svc:5000/userX-development/pipeline-practice-java:latest` にて、`userX-deployment` を適切な値に変更しておくこと
 
 ## Argo CDのインストール
 Argo CDはOperatorを用いて簡単にインストールすることが可能です。
