@@ -2,9 +2,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
-    app: sample-spring-boot
-    template: sample-spring-boot
-  name: sample-spring-boot
+    app: argocd-sample-spring-boot
+    template: argocd-sample-spring-boot
+  name: argocd-sample-spring-boot
 stringData:
   database-password: password
   database-user: freelancer
@@ -13,64 +13,64 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: sample-spring-boot
-    template: sample-spring-boot
-  name: sample-spring-boot
+    app: argocd-sample-spring-boot
+    template: argocd-sample-spring-boot
+  name: argocd-sample-spring-boot
 spec:
   ports:
   - name: web
     port: 8080
     targetPort: 8080
   selector:
-    name: sample-spring-boot
+    name: argocd-sample-spring-boot
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   labels:
-    app: sample-spring-boot
-    template: sample-spring-boot
-  name: sample-spring-boot
+    app: argocd-sample-spring-boot
+    template: argocd-sample-spring-boot
+  name: argocd-sample-spring-boot
 spec:
   host: ""
   to:
     kind: Service
-    name: sample-spring-boot
+    name: argocd-sample-spring-boot
 ---
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
   labels:
-    app: sample-spring-boot
-    template: sample-spring-boot
-  name: sample-spring-boot
+    app: argocd-sample-spring-boot
+    template: argocd-sample-spring-boot
+  name: argocd-sample-spring-boot
 spec:
   replicas: 1
   selector:
-    name: sample-spring-boot
+    name: argocd-sample-spring-boot
   strategy: null
   template:
     metadata:
       labels:
-        name: sample-spring-boot
-      name: sample-spring-boot
+        name: argocd-sample-spring-boot
+      name: argocd-sample-spring-boot
     spec:
       containers:
       - env:
         - name: PG_HOST
-          value: postgresql
+          value: argocd-postgresql
         - name: PG_DB
           value: freelancerdb
         - name: PG_USER
           valueFrom:
             secretKeyRef:
               key: database-user
-              name: sample-spring-boot
+              name: argocd-sample-spring-boot
         - name: PG_PASSWORD
           valueFrom:
             secretKeyRef:
               key: database-password
-              name: sample-spring-boot
+              name: argocd-sample-spring-boot
         image: image-registry.openshift-image-registry.svc:5000/userX-development/pipeline-practice-java:latest
         livenessProbe:
           httpGet:
@@ -78,7 +78,7 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           timeoutSeconds: 3
-        name: sample-spring-boot
+        name: argocd-sample-spring-boot
         ports:
         - containerPort: 8080
         readinessProbe:
@@ -98,9 +98,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app: sample-spring-boot
-    template: sample-spring-boot
-  name: postgresql
+    app: argocd-sample-spring-boot
+    template: argocd-sample-spring-boot
+  name: argocd-postgresql
 spec:
   accessModes:
   - ReadWriteOnce
@@ -114,16 +114,16 @@ metadata:
   annotations:
     description: Exposes the database server
   labels:
-    app: sample-spring-boot
-    template: sample-spring-boot
-  name: postgresql
+    app: argocd-sample-spring-boot
+    template: argocd-sample-spring-boot
+  name: argocd-postgresql
 spec:
   ports:
-  - name: postgresql
+  - name: argocd-postgresql
     port: 5432
     targetPort: 5432
   selector:
-    name: postgresql
+    name: argocd-postgresql
 ---
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
@@ -132,13 +132,13 @@ metadata:
     description: Defines how to deploy the database
     template.alpha.openshift.io/wait-for-ready: "true"
   labels:
-    app: sample-spring-boot
-    template: sample-spring-boot
-  name: postgresql
+    app: argocd-sample-spring-boot
+    template: argocd-sample-spring-boot
+  name: argocd-postgresql
 spec:
   replicas: 1
   selector:
-    name: postgresql
+    name: argocd-postgresql
   strategy:
     recreateParams:
       post:
@@ -149,15 +149,15 @@ spec:
           - sleep 10 && curl https://raw.githubusercontent.com/mosuke5/openshift-pipeline-practice-java/master/etc/testdata.sql
             -o /tmp/testdata.sql && PGPASSWORD=password psql -U freelancer -d freelancerdb
             -h $POSTGRESQL_SERVICE_HOST -f /tmp/testdata.sql
-          containerName: postgresql
+          containerName: argocd-postgresql
         failurePolicy: Abort
       timeoutSeconds: 600
     type: Recreate
   template:
     metadata:
       labels:
-        name: postgresql
-      name: postgresql
+        name: argocd-postgresql
+      name: argocd-postgresql
     spec:
       containers:
       - env:
@@ -165,12 +165,12 @@ spec:
           valueFrom:
             secretKeyRef:
               key: database-user
-              name: sample-spring-boot
+              name: argocd-sample-spring-boot
         - name: POSTGRESQL_PASSWORD
           valueFrom:
             secretKeyRef:
               key: database-password
-              name: sample-spring-boot
+              name: argocd-sample-spring-boot
         - name: POSTGRESQL_DATABASE
           value: freelancerdb
         image: ' '
@@ -181,7 +181,7 @@ spec:
             - --live
           initialDelaySeconds: 120
           timeoutSeconds: 10
-        name: postgresql
+        name: argocd-postgresql
         ports:
         - containerPort: 5432
         readinessProbe:
@@ -195,16 +195,16 @@ spec:
             memory: 512Mi
         volumeMounts:
         - mountPath: /var/lib/pgsql/data
-          name: postgresql-data
+          name: argocd-postgresql-data
       volumes:
-      - name: postgresql-data
+      - name: argocd-postgresql-data
         persistentVolumeClaim:
-          claimName: postgresql
+          claimName: argocd-postgresql
   triggers:
   - imageChangeParams:
       automatic: true
       containerNames:
-      - postgresql
+      - argocd-postgresql
       from:
         kind: ImageStreamTag
         name: postgresql:10
