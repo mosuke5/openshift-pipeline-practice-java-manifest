@@ -3,6 +3,13 @@ items:
 - apiVersion: v1
   kind: Secret
   metadata:
+    name: argocd-test-secret
+  stringData:
+    database-password: password
+    database-user: test
+- apiVersion: v1
+  kind: Secret
+  metadata:
     labels:
       app: sample-spring-boot
       template: sample-spring-boot
@@ -70,7 +77,7 @@ items:
               secretKeyRef:
                 key: database-password
                 name: argocd-pipeline-practice-java
-          image: image-registry.openshift-image-registry.svc:5000/userX-development/pipeline-practice-java:latest
+          image: image-registry.openshift-image-registry.svc:5000/user2-development/pipeline-practice-java:latest
           livenessProbe:
             httpGet:
               path: /health
